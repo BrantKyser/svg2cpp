@@ -6,16 +6,64 @@
 #include <boost/program_options.hpp>
 #include <inja.hpp>
 #include <json.hpp>
+#include <tinyxml2.h>
 
 /**
  * Parse an SVG file into JSON
  */
 nlohmann::json
 parseSVGfile(
-  std::string const & filePath )
+  std::filesystem::path const & filePath )
 {
   nlohmann::json returnValue;
+  tinyxml2::XMLDocument xmlDoc;
 
+  xmlDoc.LoadFile( filePath.string().c_str() );
+
+  tinyxml2::XMLElement * pRootElement( xmlDoc.RootElement() );
+  tinyxml2::XMLElement * pCurrentElement( pRootElement->FirstChildElement() );
+
+  std::vector< nlohmann::json > rectangles;
+
+  do
+  {
+    std::cout << std::string( pCurrentElement->Name() ) << std::endl;
+
+    if( std::string( pCurrentElement->Name() ) == "rect" )
+    {
+      nlohmann::json rectangle;
+ 
+       
+      rectangle[ "id" ]     = std::string( pCurrentElement->Attribute( "id" ) );
+      rectangle[ "type" ]   = "rect";
+      rectangle[ "x" ]      = pCurrentElement->DoubleAttribute( "x" );
+      rectangle[ "y" ]      = pCurrentElement->DoubleAttribute( "y" );
+      rectangle[ "height" ] = pCurrentElement->DoubleAttribute( "height" );
+      rectangle[ "width" ]  = pCurrentElement->DoubleAttribute( "width" );
+
+      rectangles.push_back( rectangle );
+    }
+
+    if( pCurrentElement->FirstChildElement() )
+    {
+      pCurrentElement = pCurrentElement->FirstChildElement();
+    }
+    else if( pCurrentElement->NextSiblingElement() )
+    {
+      pCurrentElement = pCurrentElement->NextSiblingElement();
+    }
+    else
+    {
+      pCurrentElement = pCurrentElement->Parent()->ToElement();
+      if( pCurrentElement )
+      {
+        pCurrentElement = pCurrentElement->NextSiblingElement();
+      }
+    }
+  }
+  while( pCurrentElement );
+
+  returnValue[ "objects" ] = rectangles;
   return returnValue;
 }
 
@@ -53,9 +101,6 @@ generateCode(
 
   std::filesystem::path outputFile( outputDirectory / templateFile.filename() );
   outputFile.replace_extension( "" );
-
-  std::cout << templateFile << std::endl;
-
 
   env.write( templateFile.string(), svgAsJSON, outputFile.string() );
 }
@@ -96,7 +141,22 @@ main( int argc, char** argv )
     return 0;
   }
 
-  if( ! optionsMap.count( "inputFile" ) )
+  std::filesystem::path inputFile;
+
+  if( optionsMap.count( "inputFile" ) )
+  {
+    inputFile = optionsMap[ "inputFile" ].as< std::string >();
+
+    if( ! std::filesystem::exists( inputFile ) ||
+        ! std::filesystem::is_regular_file( inputFile ) )
+    {
+      std::cerr << "ERROR: The input SVG file cannot be found or is invalid."
+                << std::endl;
+
+      return 1;
+    }
+  }
+  else
   {
     std::cerr << "ERROR: No input file specified." << std::endl;
     return 1;

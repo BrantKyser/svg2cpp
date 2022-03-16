@@ -1,1 +1,4 @@
 Hello World!
+## for object in objects
+	{{ loop.index1 }}: {{ object }}
+## endfor
