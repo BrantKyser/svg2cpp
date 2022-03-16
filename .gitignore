@@ -31,3 +31,9 @@
 *.out
 *.app
 svg2cpp
+
+# VIM swap files
+*.swp
+
+# Mac OS Finder
+.DS_Store

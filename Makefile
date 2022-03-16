@@ -1,5 +1,7 @@
 SRCS := \
   src/main.cpp \
+	$(wildcard vendor/boost/program_options/*.cpp) \
+	vendor/tinyxml2.cpp
 
 CPPFLAGS += \
   -pthread \
@@ -10,6 +12,7 @@ OBJS := $(SRCS:.cpp=.o)
 
 DEPDIR := .d
 $(shell mkdir -p $(DEPDIR)/src >/dev/null)
+$(shell mkdir -p $(DEPDIR)/vendor/boost/program_options >/dev/null)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 
 COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
