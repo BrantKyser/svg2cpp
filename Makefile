@@ -4,6 +4,7 @@ SRCS := \
 	vendor/tinyxml2.cpp
 
 CPPFLAGS += \
+  -std=c++17 \
   -pthread \
   -Ivendor \
   -lstdc++
