@@ -1,12 +1,53 @@
 #include <filesystem>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 #include <inja.hpp>
 #include <json.hpp>
 #include <tinyxml2.h>
+
+void
+parseRectangle(
+  tinyxml2::XMLElement * pRectElement,
+  nlohmann::json & rectJSON )
+{
+  rectJSON[ "x" ]      = pRectElement->DoubleAttribute( "x" );
+  rectJSON[ "y" ]      = pRectElement->DoubleAttribute( "y" );
+  rectJSON[ "height" ] = pRectElement->DoubleAttribute( "height" );
+  rectJSON[ "width" ]  = pRectElement->DoubleAttribute( "width" );
+}
+
+void
+parseCircle(
+  tinyxml2::XMLElement * pCircleElement,
+  nlohmann::json & circleJSON )
+{
+  circleJSON[ "x" ]      = pCircleElement->DoubleAttribute( "cx" );
+  circleJSON[ "y" ]      = pCircleElement->DoubleAttribute( "cy" );
+  circleJSON[ "radius" ] = pCircleElement->DoubleAttribute( "r" );
+
+}
+
+void
+parseStyle(
+  std::string const & styleString,
+  nlohmann::json & objectSVG )
+{
+  std::vector< std::string > styleElements;
+  boost::split( styleElements, styleString, boost::is_any_of( ";" ) );
+
+  for( auto & styleElement : styleElements )
+  {
+    std::vector< std::string > keyValue;
+    boost::split( keyValue, styleElement, boost::is_any_of( ":" ) );
+
+    objectSVG[ keyValue[ 0 ] ] = keyValue[ 1 ];
+  }
+}
 
 /**
  * Parse an SVG file into JSON
@@ -23,25 +64,34 @@ parseSVGfile(
   tinyxml2::XMLElement * pRootElement( xmlDoc.RootElement() );
   tinyxml2::XMLElement * pCurrentElement( pRootElement->FirstChildElement() );
 
-  std::vector< nlohmann::json > rectangles;
+  std::vector< nlohmann::json > svgObjects;
+
+  std::map< std::string,
+            std::function< void( tinyxml2::XMLElement *, nlohmann::json & ) > > parsingFunctionMap;
+  parsingFunctionMap[ "rect" ]   = &parseRectangle;
+  parsingFunctionMap[ "circle" ] = &parseCircle;
 
   do
   {
-    std::cout << std::string( pCurrentElement->Name() ) << std::endl;
+    //std::cout << std::string( pCurrentElement->Name() ) << std::endl;
 
-    if( std::string( pCurrentElement->Name() ) == "rect" )
+    if( parsingFunctionMap.count( std::string( pCurrentElement->Name() ) ) > 0 )
     {
-      nlohmann::json rectangle;
- 
-       
-      rectangle[ "id" ]     = std::string( pCurrentElement->Attribute( "id" ) );
-      rectangle[ "type" ]   = "rect";
-      rectangle[ "x" ]      = pCurrentElement->DoubleAttribute( "x" );
-      rectangle[ "y" ]      = pCurrentElement->DoubleAttribute( "y" );
-      rectangle[ "height" ] = pCurrentElement->DoubleAttribute( "height" );
-      rectangle[ "width" ]  = pCurrentElement->DoubleAttribute( "width" );
+      nlohmann::json svgObject;
 
-      rectangles.push_back( rectangle );
+      // Parse Common data 
+      svgObject[ "name" ] = pCurrentElement->Attribute( "inkscape:label" ) == nullptr ?
+                              std::string( pCurrentElement->Attribute( "id" ) ) :
+                              std::string( pCurrentElement->Attribute( "inkscape:label" ) );
+      svgObject[ "type" ] = std::string( pCurrentElement->Name() );
+
+      parseStyle( pCurrentElement->Attribute( "style" ), svgObject );
+
+
+      // Call element type specific parser
+      parsingFunctionMap[ std::string( pCurrentElement->Name() ) ]( pCurrentElement, svgObject );
+
+      svgObjects.push_back( svgObject );
     }
 
     if( pCurrentElement->FirstChildElement() )
@@ -63,7 +113,7 @@ parseSVGfile(
   }
   while( pCurrentElement );
 
-  returnValue[ "objects" ] = rectangles;
+  returnValue[ "objects" ] = svgObjects;
   return returnValue;
 }
 
