@@ -1,0 +1,26 @@
+#include <QGraphicsEllipseItem>
+#include <QGraphicsRectItem>
+
+struct SVGelements
+{
+## for object in objects
+  {% if object.type == "rect" %}
+    QGraphicsRectItem m{{object.name}};
+  {% endif %}
+  {% if object.type == "circle" %}
+    QGraphicsEllipseItem m{{object.name}};
+  {% endif %}
+## endfor
+
+  SVGelements()
+  :
+## for object in objects
+{% if object.type == "rect" %}
+	m{{ object.name }}( {{ object.x }}, {{ object.y }}, {{ object.width }}, {{ object.height }} ){% if not loop.is_last %},{% endif %}
+{% endif %}
+## endfor
+  {
+
+  }
+};
+

@@ -7,6 +7,8 @@
 #include <QGraphicsTextItem>
 #include <QTimer>
 
+#include "generated/SVGelementsAsQGraphicsItems.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -27,10 +29,6 @@ private:
 
     QTimer mClockTick;
     QGraphicsScene mScene;
-
-    QGraphicsEllipseItem mClockFace;
-    QGraphicsLineItem mSecondHand;
-    QGraphicsLineItem mMinuteHand;
-    QGraphicsLineItem mHourHand;
+    SVGelements mSVGelements;
 };
 #endif // MAINWINDOW_H

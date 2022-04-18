@@ -7,20 +7,15 @@ MainWindow::MainWindow( QWidget * parent )
     : QMainWindow( parent )
     , ui( new Ui::MainWindow )
     , mClockTick( this )
-    , mClockFace( -100, -100, 200, 200 )
-    , mSecondHand( 0, 0, 0, -100)
-    , mMinuteHand( 0, 0, 0, -75)
-    , mHourHand( 0, 0, 0, -50)
-
 {
     ui->setupUi( this );
 
     mScene.setBackgroundBrush( QBrush( Qt::white, Qt::SolidPattern ) );
 
-    mScene.addItem( &mClockFace );
-    mScene.addItem( &mSecondHand );
-    mScene.addItem( &mMinuteHand );
-    mScene.addItem( &mHourHand );
+    mScene.addItem( &mSVGelements.mClockFace );
+    mScene.addItem( &mSVGelements.mSecondHand );
+    mScene.addItem( &mSVGelements.mMinuteHand );
+    mScene.addItem( &mSVGelements.mHourHand );
 
     ui->graphicsView->setScene( &mScene );
 
@@ -43,7 +38,7 @@ MainWindow::UpdateClock()
 
     qDebug() << "Clock Tick:" <<  currentTimeString;
 
-    mSecondHand.setRotation( 360.0 * ( currentTime.time().second() / 60.0 ) );
-    mMinuteHand.setRotation( 360.0 * ( currentTime.time().minute() / 60.0 ) );
-    mHourHand.setRotation( 360.0 * ( currentTime.time().hour() / 12.0 ) );
+    mSVGelements.mSecondHand.setRotation( 360.0 * ( currentTime.time().second() / 60.0 ) );
+    mSVGelements.mMinuteHand.setRotation( 360.0 * ( currentTime.time().minute() / 60.0 ) );
+    mSVGelements.mHourHand.setRotation( 360.0 * ( currentTime.time().hour() / 12.0 ) );
 }
