@@ -23,7 +23,15 @@ struct SVGelements
 {% endif %}
 ## endfor
   {
-
+## for object in objects
+{% if object.type == "circle" or object.type == "rect" %}
+  {% if object.fill != "none" %}
+	m{{ object.name }}.setBrush( QBrush( QColor( "{{ object.fill }}" ) ) );
+  {% endif %}
+  {% if object.stroke != "none" %}
+	m{{ object.name }}.setPen( QPen( QColor( "{{ object.stroke }}" ) ) );
+  {% endif %}
+{% endif %}
+## endfor
   }
 };
-
