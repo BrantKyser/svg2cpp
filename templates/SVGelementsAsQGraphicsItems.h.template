@@ -15,6 +15,9 @@ struct SVGelements
   SVGelements()
   :
 ## for object in objects
+{% if object.type == "circle" %}
+	m{{ object.name }}( {{ object.x }} - {{ object.radius }}, {{ object.y }} - {{ object.radius }}, {{ object.radius }} * 2, {{ object.radius }} * 2 ){% if not loop.is_last %},{% endif %}
+{% endif %}
 {% if object.type == "rect" %}
 	m{{ object.name }}( {{ object.x }}, {{ object.y }}, {{ object.width }}, {{ object.height }} ){% if not loop.is_last %},{% endif %}
 {% endif %}

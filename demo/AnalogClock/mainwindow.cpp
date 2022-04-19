@@ -17,6 +17,19 @@ MainWindow::MainWindow( QWidget * parent )
     mScene.addItem( &mSVGelements.mMinuteHand );
     mScene.addItem( &mSVGelements.mHourHand );
 
+    // Set the translation origins for the clock hands so that the hands rotate around the bottom center of the hand
+    mSVGelements.mSecondHand.setTransformOriginPoint(
+        mSVGelements.mSecondHand.rect().x() + mSVGelements.mSecondHand.rect().width() / 2.0,
+        mSVGelements.mSecondHand.rect().y() + mSVGelements.mSecondHand.rect().height() );
+
+    mSVGelements.mMinuteHand.setTransformOriginPoint(
+        mSVGelements.mMinuteHand.rect().x() + mSVGelements.mMinuteHand.rect().width() / 2.0,
+        mSVGelements.mMinuteHand.rect().y() + mSVGelements.mMinuteHand.rect().height() );
+
+    mSVGelements.mHourHand.setTransformOriginPoint(
+        mSVGelements.mHourHand.rect().x() + mSVGelements.mHourHand.rect().width() / 2.0,
+        mSVGelements.mHourHand.rect().y() + mSVGelements.mHourHand.rect().height() );
+
     ui->graphicsView->setScene( &mScene );
 
     connect( &mClockTick, &QTimer::timeout, this, &MainWindow::UpdateClock );
@@ -38,6 +51,7 @@ MainWindow::UpdateClock()
 
     qDebug() << "Clock Tick:" <<  currentTimeString;
 
+    // Set the rotation of each hand based on the time
     mSVGelements.mSecondHand.setRotation( 360.0 * ( currentTime.time().second() / 60.0 ) );
     mSVGelements.mMinuteHand.setRotation( 360.0 * ( currentTime.time().minute() / 60.0 ) );
     mSVGelements.mHourHand.setRotation( 360.0 * ( currentTime.time().hour() / 12.0 ) );

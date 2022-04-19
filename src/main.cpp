@@ -73,8 +73,6 @@ parseSVGfile(
 
   do
   {
-    //std::cout << std::string( pCurrentElement->Name() ) << std::endl;
-
     if( parsingFunctionMap.count( std::string( pCurrentElement->Name() ) ) > 0 )
     {
       nlohmann::json svgObject;
