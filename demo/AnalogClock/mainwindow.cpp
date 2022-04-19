@@ -13,9 +13,9 @@ MainWindow::MainWindow( QWidget * parent )
     mScene.setBackgroundBrush( QBrush( Qt::white, Qt::SolidPattern ) );
 
     mScene.addItem( &mSVGelements.mClockFace );
-    mScene.addItem( &mSVGelements.mSecondHand );
-    mScene.addItem( &mSVGelements.mMinuteHand );
     mScene.addItem( &mSVGelements.mHourHand );
+    mScene.addItem( &mSVGelements.mMinuteHand );
+    mScene.addItem( &mSVGelements.mSecondHand );
 
     // Set the translation origins for the clock hands so that the hands rotate around the bottom center of the hand
     mSVGelements.mSecondHand.setTransformOriginPoint(
