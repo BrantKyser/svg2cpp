@@ -7,7 +7,7 @@ Circle CI Status: [![BrantKyser](https://circleci.com/gh/BrantKyser/svg2cpp.svg?
 svg2cpp is a tool that enables 2d graphics artifacts saved as SVG files to be integrated into C++ projects. The tool parses the specified SVG file and applies templates to the parsed elements from the SVG file to generate source code that can then be integrated into a project. The current templates provided generate C++ code for the QGraphics 2d graphics library that is part of Qt. 
 
 ## Building
-The svg2cpp tool is developed on MacOS. Simply runn ```make``` in the root directory of the repository after cloning the repository to build the tool. The tool can be build on other Unix platforms with minor modifications to the Makefile.
+The svg2cpp tool is developed on MacOS. Simply run ```make``` in the root directory of the repository after cloning the repository to build the tool. The tool can be built on other Unix platforms with minor modifications to the Makefile.
 
 ## Running
 
